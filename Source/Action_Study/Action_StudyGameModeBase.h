@@ -14,4 +14,9 @@ class ACTION_STUDY_API AAction_StudyGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+		
+	virtual void StartPlay() override;
+
+
 };
