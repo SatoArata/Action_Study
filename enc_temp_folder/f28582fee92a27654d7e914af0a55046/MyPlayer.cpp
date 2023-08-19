@@ -44,18 +44,14 @@ void AMyPlayer::BeginPlay()
 
 void AMyPlayer::MoveForward(float Value)
 {
-	if (Value == 0.f)return;
-
-	FVector direction = FRotationMatrix(m_SpringArmComp->GetComponentRotation()).GetScaledAxis(EAxis::X);
+	FVector direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
 	direction.Z = 0.0f; // z軸成分を0に設定
 	AddMovementInput(direction.GetSafeNormal(), Value);
 }
 
 void AMyPlayer::MoveRight(float Value)
 {
-	if (Value == 0.f)return;
-
-	FVector direction = FRotationMatrix(m_SpringArmComp->GetComponentRotation()).GetScaledAxis(EAxis::Y);
+	FVector direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
 	direction.Z = 0.0f; // z軸成分を0に設定
 	AddMovementInput(direction.GetSafeNormal(), Value);
 }
@@ -86,49 +82,11 @@ void AMyPlayer::CameraLookUp(float Val)
 	}
 }
 
-void AMyPlayer::RotateToMatchDirection()
-{
-	if (InputComponent->GetAxisValue("MoveForward") == 0.f &&
-		InputComponent->GetAxisValue("MoveRight") == 0.f)
-		return;
-
-	// 目標の回転（カメラの回転）を取得
-	// メッシュの位置とカメラの位置を取得
-	FVector MeshLocation = GetMesh()->GetComponentLocation();
-	FVector CameraLocation = m_CameraComponent->GetComponentLocation();
-
-	// メッシュからカメラへのベクトルを計算
-	FVector MeshToCamera = CameraLocation - MeshLocation;
-	MeshToCamera.Z = 0;
-	MeshToCamera.Normalize(); // ベクトルを正規化
-
-	//目標の角度を算出
-
-	// 左スティックの水平方向の入力を取得
-	FVector2D LeftStickInput = FVector2D(InputComponent->GetAxisValue("MoveForward"), InputComponent->GetAxisValue("MoveRight"));
-	// 入力ベクトルを角度に変換
-	float InputAngle = FMath::Atan2(LeftStickInput.Y, LeftStickInput.X) * (180.0f / PI);
-
-	FRotator TargetRotation = MeshToCamera.Rotation() + FRotator(0, 90.f + InputAngle, 0);
-
-	// 現在の回転を取得
-	FRotator CurrentRotation = GetMesh()->GetComponentRotation();
-
-	// 補間率を計算（DeltaTimeはフレーム時間）
-	const float INTERP_SPEED = 7.f;
-	const float DELTA_TIME = GetWorld()->GetDeltaSeconds();
-
-	// 補間を行い、メッシュの回転を更新
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DELTA_TIME, INTERP_SPEED);
-	GetMesh()->SetWorldRotation(NewRotation);
-}
-
 // Called every frame
 void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	RotateToMatchDirection();
 }
 
 // Called to bind functionality to input

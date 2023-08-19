@@ -42,9 +42,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* m_CameraComponent;
 
-	//“ü—ÍŠp‚Éƒ‚ƒfƒ‹‚Ì•ûŒü‚ğİ’è
-	void RotateToMatchDirection();
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
